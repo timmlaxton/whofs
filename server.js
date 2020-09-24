@@ -5,11 +5,15 @@ const connectDB = require('./config/db')
 const app = express();
 connectDB();
 
+//Init MidlleWare
+app.use(express.json( {extended: false }))
+
 app.get('/', (req, res) => res.send('API Running') )
 
 // Define Routes
 app.use('/api/users', require('./routes/api/users'))
 app.use('/api/todos', require('./routes/api/todos'))
+app.use('/api/auth', require('./routes/api/auth'))
 
 const PORT = process.env.PORT || 5000;
 
