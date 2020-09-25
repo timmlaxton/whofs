@@ -9,12 +9,9 @@ const User = require('../../models/User');
 // @Route   POST api/todos
 // @desc    Test Route
 // @access  Public
-router.post('/', [auth, [
-  check('message', 'Message os required')
-  .not()
-  .isEmpty()
-]
-],
+router.post(
+  '/', 
+  [auth, [check('message', 'Message os required').not().isEmpty()]],
  async (req, res) => {
    const errors = validationResult(req);
    if(!errors.isEmpty()) {
@@ -22,7 +19,6 @@ router.post('/', [auth, [
    }
 
    try {
-
     const user = await User.findById(req.user.id).select('-password');
 
     const newTodo = new Todo ({
@@ -38,6 +34,8 @@ router.post('/', [auth, [
      console.error(err.message);
      res.status(500).send('Server Error')
    }
+  }
+);
 
 // @route    GET api/todos
 // @desc     Get all todos
@@ -85,7 +83,7 @@ router.delete('/:id', auth, async (req, res) => {
     }
 
     // Check user
-    if (post.user.toString() !== req.user.id) {
+    if (todo.user.toString() !== req.user.id) {
       return res.status(401).json({ msg: 'User not authorized' });
     }
 
@@ -101,6 +99,6 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
-});
+
 
 module.exports = router;
