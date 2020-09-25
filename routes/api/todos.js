@@ -52,50 +52,54 @@ router.get('/', auth, async (req, res) => {
   }
 });
 
-// // @route    GET api/posts/:id
-// // @desc     Get post by ID
-// // @access   Private
-// router.get('/:id', [auth, checkObjectId('id')], async (req, res) => {
-//   try {
-//     const todo = await Todo.findById(req.params.id);
+// @route    GET api/todos/:id
+// @desc     Get todo by ID
+// @access   Private
+router.get('/:id', auth, async (req, res) => {
+  try {
+    const todo = await Todo.findById(req.params.id);
     
-//     if (!todo) {
-//       return res.status(404).json({ msg: 'Todo not found' })
-//     }
+    if (!todo) {
+      return res.status(404).json({ msg: 'Todo not found' })
+    }
 
-//     res.json(todo);
-//   } catch (err) {
-//     console.error(err.message);
+    res.json(todo);
+  } catch (err) {
+    console.error(err.message);
+    if(err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Todo not foud'});
+    }
+    res.status(500).send('Server Error');
+  }
+});
 
-//     res.status(500).send('Server Error');
-//   }
-// });
+// @route    DELETE api/todos/:id
+// @desc     Delete a todo
+// @access   Private
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const todo = await Todo.findById(req.params.id);
 
-// // @route    DELETE api/posts/:id
-// // @desc     Delete a post
-// // @access   Private
-// router.delete('/:id', [auth, checkObjectId('id')], async (req, res) => {
-//   try {
-//     const todo = await Todo.findById(req.params.id);
+    if (!todo) {
+      return res.status(404).json({ msg: 'Post not found' });
+    }
 
-//     if (!todo) {
-//       return res.status(404).json({ msg: 'Post not found' });
-//     }
+    // Check user
+    if (post.user.toString() !== req.user.id) {
+      return res.status(401).json({ msg: 'User not authorized' });
+    }
 
-//     // Check user
-//     if (post.user.toString() !== req.user.id) {
-//       return res.status(401).json({ msg: 'User not authorized' });
-//     }
+    await todo.remove();
 
-//     await todo.remove();
-
-//     res.json({ msg: 'Todo removed' });
-//   } catch (err) {
-//     console.error(err.message);
-
-//     res.status(500).send('Server Error');
-//   }
-// });
+    res.json({ msg: 'Todo removed' });
+  } catch (err) {
+    console.error(err.message);
+    if(err.kind === 'ObjectId') {
+      return res.status(404).json({ msg: 'Todo not foud'});
+    }
+    res.status(500).send('Server Error');
+  }
+});
 
 });
 
